@@ -7,15 +7,41 @@ class Atendimento {
     const data = moment(atendimento.data, "DD/MM/YYYY").format(
       "YYYY-MM-DD hh:mm:ss"
     );
-    const atendimentoDatado = { ...atendimento, dataCriacao, data };
-    const sql = "INSERT INTO Atendimentos SET ?";
-    conexao.query(sql, atendimentoDatado, (erro, resultados) => {
-      if (erro) {
-        res.status(400).json(erro);
-      } else {
-        res.status(201).json(resultados);
-      }
-    });
+
+    //Validações
+    const dataEhValida = moment(data).isSameOrAfter(dataCriacao);
+    const clientEhValido = atendimento.client.length >= 5;
+
+    const validacoes = [
+      {
+        nome: "data",
+        valido: dataEhValida,
+        mensagem: "Data deve ser maior ou igual a data atual",
+      },
+      {
+        nome: "cliente",
+        valido: clientEhValido,
+        mensagem: "Cliente deve ter pelo menos 5 caracteres",
+      },
+    ];
+
+    const erros = validacoes.filters((campo) => !campo.valido);
+    const existemErros = erros.length;
+
+    if (existemErros) {
+      res.json(400).json(erros);
+    } else {
+      const atendimentoDatado = { ...atendimento, dataCriacao, data };
+
+      const sql = "INSERT INTO Atendimentos SET ?";
+      conexao.query(sql, atendimentoDatado, (erro, resultados) => {
+        if (erro) {
+          res.status(400).json(erro);
+        } else {
+          res.status(201).json(resultados);
+        }
+      });
+    }
   }
 }
 
