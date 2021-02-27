@@ -5,13 +5,20 @@ module.exports = (app) => {
     Atendimento.lista(res);
   });
   app.get("/atendimentos/:id", (req, res) => {
-    const id =  parseInt(req.params.id);
+    const id = parseInt(req.params.id);
     Atendimento.buscaPorId(res, id);
   });
   app.post("/atendimentos", (req, res) => {
     const atendimento = req.body;
     Atendimento.adiciona(atendimento, res);
-    // console.log(req.body);
-    // res.send("Você está na rota de atendimentos enviando um post.")
+  });
+  app.patch("/atendimentos/:id", (req, res) => {
+    const id = parseInt(req.params.id);
+    const valores = req.body;
+    Atendimento.altera(res, id, valores);
+  });
+  app.delete("/atendimentos/:id", (req, res) => {
+    const id = parseInt(req.params.id);
+    Atendimento.deleta(res, id);
   });
 };

@@ -43,6 +43,7 @@ class Atendimento {
       });
     }
   }
+
   lista(res) {
     const sql = "SELECT * FROM Atendimentos";
 
@@ -54,14 +55,47 @@ class Atendimento {
       }
     });
   }
+
   buscaPorId(res, id) {
     const sql = `SELECT * FROM Atendimentos WHERE id = ${id}`;
     conexao.query(sql, (erro, resultados) => {
-      if(erro){
+      if (erro) {
         res.status(400).json(erro);
       } else {
         res.status(201).json(resultados);
       }
+    });
+  }
+
+  altera(res, id, valores) {
+    const sql = "UPDATE Atendimentos set ? where ?";
+
+    if (valores.data) {
+      const data = moment(valores.data, "DD/MM/YYYY").format(
+        "YYYY-MM-DD hh:mm:ss"
+      );
+      valores = { ...valores, data };
+    }
+    if (valores.dataCriacao) {
+      const dataCriacao = moment(valores.dataCriacao).format(
+        "YYYY-MM-DD hh:mm:ss"
+      );
+      valores = { ...valores, dataCriacao };
+    }
+    conexao.query(sql, [valores, id], (erro, resultados) => {
+      if (erro) {
+        res.status(400).json(erro);
+      } else {
+        res.status(200).json(resultados);
+      }
+    });
+  }
+
+  deleta(res, id) {
+    const sql = `DELETE FROM Atendimentos WHERE ID = ${id}`;
+    conexao.query(sql, (erro, resultados) => {
+      if (erro) res.status(400).json(erro);
+      else res.status(200).json(id);
     });
   }
 }
