@@ -10,7 +10,7 @@ class Atendimento {
 
     //Validações
     const dataEhValida = moment(data).isSameOrAfter(dataCriacao);
-    const clientEhValido = atendimento.client.length >= 5;
+    const clientEhValido = atendimento.cliente.length >= 5;
 
     const validacoes = [
       {
@@ -25,11 +25,11 @@ class Atendimento {
       },
     ];
 
-    const erros = validacoes.filters((campo) => !campo.valido);
+    const erros = validacoes.filter((campo) => !campo.valido);
     const existemErros = erros.length;
 
     if (existemErros) {
-      res.json(400).json(erros);
+      res.status(400).json(erros);
     } else {
       const atendimentoDatado = { ...atendimento, dataCriacao, data };
 
@@ -42,6 +42,17 @@ class Atendimento {
         }
       });
     }
+  }
+  lista(res) {
+    const sql = "SELECT * FROM Atendimentos";
+
+    conexao.query(sql, (erro, resultados) => {
+      if (erro) {
+        res.status(400).json(erro);
+      } else {
+        res.status(200).json(resultados);
+      }
+    });
   }
 }
 
